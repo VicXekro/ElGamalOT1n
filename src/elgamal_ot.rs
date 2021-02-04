@@ -9,6 +9,7 @@ use openssl::nid::Nid;
 use openssl::hash::{Hasher, MessageDigest};
 
 pub mod ec_handler;
+pub mod data_handler;
 use ec_handler::EcHandler;
 
 pub struct Receiver{
@@ -65,6 +66,27 @@ impl Receiver{
 
         EcHandler::derive_key(&v,&w)
     }
+
+    // Given a set of ciphertext, decipher all. From OT assumption, only the ciphertext whose index correspond to the 
+    // index chosen by the receiver ealier will produce a sound message
+    pub fn dec_items(&self, ciphertexts:&Vec<Vec<u8>>, sender_pubkey:&EcPointRef)->Vec<Vec<u8>>{
+        let key = self.get_dec_key(sender_pubkey);
+        
+        let mut messages:Vec<Vec<u8>> = Vec::with_capacity(ciphertexts.len());
+
+        let mut i = 0;
+        for ciphertext in ciphertexts.iter(){
+            //println!("cipher at {}", i);
+            let message = match self.ec_handler.dec_data(&key[..], ciphertext){
+                Ok(m)=>m,
+                Err(e)=> b"could not decrypt this".to_vec(),
+            };
+            messages.push(message);
+            i+=1;
+        }
+
+        messages
+    }
 }
 
 // Default value for a receiver
@@ -87,8 +109,11 @@ impl Sender{
     //  @param item_index: the index of the item for which we want to generate the key
     //  @param sender_ephk: the sender ephemeral key
     //  @param receiver_km: hidden choice of receiver
-    pub fn get_item_key(&self, item_index:u32, sender_ephk:&EcKeyRef<Private>, 
-                        sender_ephk_bytes:&Vec<u8>,receiver_km:&EcPointRef)-> Vec<u8>{
+    //  @return a 16 bytes key
+    pub fn get_item_key(&self, item_index: u32, 
+                        sender_ephk: &EcKeyRef<Private>, 
+                        sender_ephk_bytes: &Vec<u8>,
+                        receiver_km: &EcPointRef)-> Vec<u8>{
         let item_index:BigNum = BigNum::from_u32(item_index).unwrap();
         let v_powerj:EcPoint = self.ec_handler.ec_mul(sender_ephk.public_key(), &item_index); //compute v^j
         let u_j:EcPoint = self.ec_handler.ec_add(&v_powerj, &receiver_km); //computer u.v^j
@@ -97,7 +122,43 @@ impl Sender{
         EcHandler::derive_key(sender_ephk_bytes, &w_j)
     }
 
+    // Generates encryption keys for each item to be encrypted based on their index and the reciever hidden choice
+    // @param indexes: a slice containing the indexes of the items to be encrypted
+    // --> See get_item_key for description of other parameters
+    // @return a vectors containing the encryption key for each item
+    pub fn gen_items_enc_key(&self, indexes:&[u8], 
+                            sender_ephk: &EcKeyRef<Private>, 
+                            sender_ephk_bytes: &Vec<u8>,
+                            receiver_km: &EcPointRef)-> Vec<Vec<u8>>{
+        let length = indexes.len();
+        let mut keys: Vec<Vec<u8>> = Vec::with_capacity(length);
+        for index in indexes.iter(){
+            let key = self.get_item_key(*index as u32, sender_ephk, sender_ephk_bytes, receiver_km);
+            keys.push(key);
+        }
+        keys
+    }
 
+    // Generates encryption keys and encrypt data
+    // @param indexes: a slice containing the indexes of the items to be encrypted
+    // @param data: a vectors of binary data to be encrypted
+    // @return a vectors of ciphertext
+    pub fn enc_items(&self, indexes:&[u8], 
+                            data: &Vec<Vec<u8>>, 
+                            sender_ephk: &EcKeyRef<Private>, 
+                            sender_ephk_bytes: &Vec<u8>,
+                            receiver_km: &EcPointRef)->Vec<Vec<u8>>{
+        assert_eq!(indexes.len(), data.len()); // ensure that number of indexes correspond to number of data
+        let length = indexes.len();
+        let mut ciphertexts:Vec<Vec<u8>> = Vec::with_capacity(length);
+        let keys = self.gen_items_enc_key(indexes, sender_ephk, sender_ephk_bytes, receiver_km);
+
+        for i in 0..length{
+            let ciphertext = self.ec_handler.enc_data(&keys[i], &data[i]);
+            ciphertexts.push(ciphertext);
+        }
+        ciphertexts
+    }
 
 }
 

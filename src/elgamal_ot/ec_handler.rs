@@ -108,11 +108,11 @@ impl EcHandler{
 
     // This function takes a ciphertext and an encryption key as inputs. It returns the corresponding plaintext
     // It use AES 128 CBC as block cipher
-    pub fn dec_data(&self, key:&[u8], ciphertext:&[u8])->Vec<u8>{
+    pub fn dec_data(&self, key:&[u8], ciphertext:&[u8])->Result<Vec<u8>, openssl::error::ErrorStack>{
         let iv = &ciphertext[0..16];//read first 16 bytes of ciphertext to get the IV
         let ciphertext = &ciphertext[16..];
-        let data = decrypt(self.block_cipher, key, Some(&iv[..]), ciphertext).unwrap();
-        data
+        let data = decrypt(self.block_cipher, key, Some(&iv[..]), ciphertext)?;
+        Ok(data)
     }
 }
 
