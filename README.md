@@ -1,12 +1,25 @@
 ## 1-To-n Oblivious Transfer protocol based on ElGamal Cryptosystem
 ### What is an Oblivious Transfer
-### Description of the protocol
+An Oblivious Transfer (OT) is a protocol between a sender *S* and a receiver *R* that allows *R* to obtain a message m<sub>i</sub> from a set of messages M = {m<sub>0</sub>,...,m<sub>n</sub>} held by *S* without *S* learning which message *R* obtained and with *R* only learning m<sub>i</sub> and no other messages in M. <br>
+OT protocols have applications in areas such as secure multiparty computation and private set intersection.<br>
+It this project, a *pure Rust Implementation* of a 1-to-n OT protocol based on ElGamal Cryptosystem is implemented.
+
+### Preliminaries
+#### ElGamal Cryptosystem
+Given a cyclic group *G* of prime order *n* and one of its generator *g*, ElGamal Cryptosystem is a triple of polynomial time algorithms **(Gen, Enc, Dec)** with the following properties:
+- The key generation algorithm **Gen** samples at random a value *x* belonging to the set *Z*<sup>*</sup><sub>n</sub>(set of integers using modular *n* arithmetic, i.e., modulo *n* is applied on all operations) and computes *y*=*g*<sup>x</sup> *mod n*. The value *x* is the secret key and the value *y* is the public key. 
+#### The protocol
+
 ### How to run
 #### Setup the environment
 1. Rust >= version 1.45
 2. OpenSSL >= version 1.1.1
+<br>
 Once the different environment dependencies have been installed, create an RSA private key and a signed 
 certificate for the server (both in PEM format) using OpenSSL and place those files in
 src/keyfile folder.
+
+### Output example
+
 ### Reference
 1. D. Boneh and V. Shoup, ["A Graduate Course in Applied Cryptography"](https://toc.cryptobook.us/), Chapter 11
