@@ -12,14 +12,17 @@ Given a cyclic group *G* of prime order *n* and one of its generator *g*, ElGama
 - The decryption algorithm **Dec** takes as inputs a secret key *x* and a tuple of ciphertexts (*c*<sub>1</sub>, *c*<sub>2</sub>). Then, it computes *k* = *c*<sub>1</sub><sup>x</sup>*mod n* = *g*<sup>x.r</sup> *mod n*. Using *k*, it computes *m* = *c*<sub>2</sub>.*k*<sup>-1</sup>*mod n* = m.*g*<sup>x.r</sup>.*g*<sup>-(x.r)</sup> *mod n*
 #### The protocol
 
-### How to run
-#### Setup the environment
+### How to run (Linux)
+Have the following components installed:
 1. Rust >= version 1.45
 2. OpenSSL >= version 1.1.1
 <br>
 Once the different environment dependencies have been installed, create an RSA private key and a signed 
 certificate for the server (both in PEM format) using OpenSSL and place those files in
-src/keyfile folder.
+src/keyfile folder.<br>
+Next, With the terminal working directory set to the project director, run the command `cargo build --release` <br>
+- To launch the Server/Sender program, executes the command `./target/release/server`
+- To launch the Client/Receiver program, executes the command `./target/release/client`
 
 ### Output example
 
