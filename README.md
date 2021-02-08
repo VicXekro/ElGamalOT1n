@@ -8,6 +8,7 @@ It this project, a *pure Rust Implementation* of a 1-to-n OT protocol based on E
 #### ElGamal Cryptosystem
 Given a cyclic group *G* of prime order *n* and one of its generator *g*, ElGamal Cryptosystem is a triple of polynomial time algorithms **(Gen, Enc, Dec)** with the following properties:
 - The key generation algorithm **Gen** samples at random a value *x* belonging to the set *Z*<sup>*</sup><sub>n</sub>(set of integers using modular *n* arithmetic, i.e., modulo *n* is applied on all operations) and computes *y*=*g*<sup>x</sup> *mod n*. The value *x* is the secret key and the value *y* is the public key. 
+- The encryption algorithm **Enc** takes as input a public key *y* and a message *m* belonging to the group *G*. Then, it samples at random a secret value *r* belonging to *Z*<sup>*</sup><sub>n</sub>. After, it computes *c*<sub>1</sub> = *g*<sup>r</sup> *mod n* and *c*<sub>2</sub> = m* *y*<sup>r</sup> *mod n*. Finally, it outpus *c*<sub>1</sub>, *c*<sub>2</sub>.
 #### The protocol
 
 ### How to run
