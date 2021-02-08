@@ -21,8 +21,8 @@ Once the different environment dependencies have been installed, create an RSA p
 certificate for the server (both in PEM format) using OpenSSL and place those files in
 src/keyfile folder.<br>
 Next, With the terminal working directory set to the project director, run the command `cargo build --release` <br>
-- To launch the Server/Sender program, executes the command `./target/release/server`
-- To launch the Client/Receiver program, executes the command `./target/release/client`
+* To launch the Server/Sender program, executes the command `./target/release/server`
+* To launch the Client/Receiver program, executes the command `./target/release/client`
 
 ### Output example
 
