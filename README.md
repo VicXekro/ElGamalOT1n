@@ -11,7 +11,8 @@ Given a cyclic group *G* of prime order *n* and one of its generator *g*, ElGama
 - The encryption algorithm **Enc** takes as input a public key *y* and a message *m* belonging to the group *G*. Then, it samples at random a secret value *r* belonging to *Z*<sup>*</sup><sub>n</sub>. After, it computes *c*<sub>1</sub> = *g*<sup>r</sup> *mod n* and *c*<sub>2</sub> = m.*y*<sup>r</sup> *mod n* = m.*g*<sup>x.r</sup> *mod n*. Finally, it outpus (*c*<sub>1</sub>, *c*<sub>2</sub>).
 - The decryption algorithm **Dec** takes as inputs a secret key *x* and a tuple of ciphertexts (*c*<sub>1</sub>, *c*<sub>2</sub>). Then, it computes *k* = *c*<sub>1</sub><sup>x</sup>*mod n* = *g*<sup>x.r</sup> *mod n*. Using *k*, it computes *m* = *c*<sub>2</sub>.*k*<sup>-1</sup>*mod n* = m.*g*<sup>x.r</sup>.*g*<sup>-(x.r)</sup> *mod n*
 #### The protocol
-
+Following is a diagram that depicts the execution of the protocol:
+![protocol](miscellaneous/protocol.png)
 ### How to run (Linux)
 Have the following components installed:
 1. Rust >= version 1.45
@@ -27,6 +28,11 @@ Next, With the terminal working directory set to the project director, run the c
 * To launch the Client/Receiver program, executes the command `./target/release/client`
 
 ### Output example
+Following is an example between a client and a server:
+![Example](miscellaneous/exampleE.png)
+As we can see, The client selected message at index 3, and after, it is only able to obtain a plaintext version of message at index 3.
+
+Thus, 1-n OT protocol is respected.
 
 ### Reference
 1. D. Boneh and V. Shoup, ["A Graduate Course in Applied Cryptography"](https://toc.cryptobook.us/), Chapter 11
